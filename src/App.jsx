@@ -5,6 +5,7 @@ import { useWeb3 } from "@3rdweb/hooks";
 import { ThirdwebSDK } from "@3rdweb/sdk";
 
 import { ethers } from "ethers";
+import CreateProposal from "./CreateProposal";
 
 
 
@@ -349,6 +350,7 @@ useEffect(() => {
                 sign.
               </small>
             </form>
+            <CreateProposal />
           </div>
         </div>
       </div>
@@ -365,7 +367,15 @@ useEffect(() => {
           setIsClaiming(true);
           // Call bundleDropModule.claim("0", 1) to mint nft to user's wallet.
           bundleDropModule
-            .claim("0", 1)
+          .claim("0", 1)
+          .then(() => {
+            // Set claim state.
+            setHasClaimedNFT(true);
+            // Show user their fancy new NFT!
+            console.log(
+              `Successfully Minted! Check it our on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address}/0`
+            );
+          })
             .catch((err) => {
               console.error("failed to claim", err);
               setIsClaiming(false);
