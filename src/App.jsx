@@ -46,6 +46,7 @@ const App = () => {
 const [isVoting, setIsVoting] = useState(false);
 const [hasVoted, setHasVoted] = useState(false);
 
+
 // Retreive all our existing proposals from the contract.
 useEffect(() => {
   if (!hasClaimedNFT) {
@@ -373,7 +374,8 @@ useEffect(() => {
               // Stop loading state.
               setIsClaiming(false);
               // Set claim state.
-              setHasClaimedNFT(true);
+              //setHasClaimedNFT(true);
+              window.location.reload();
               // Show user their fancy new NFT!
               console.log(
                 `Successfully Minted! Check it our on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address}/0`
