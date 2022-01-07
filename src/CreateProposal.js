@@ -103,6 +103,7 @@ export default function CreateProposal() {
         );
     
         console.log("✅ Successfully created new blank proposal");
+        window.location.reload();
       } catch (error) {
         console.error("failed to create first proposal", error);
         
@@ -139,6 +140,8 @@ export default function CreateProposal() {
           );
       
           console.log("✅ Successfully created proposal to mint tokens");
+          window.location.reload();
+          
         } catch (error) {
           console.error("failed to create proposal", error);
           
@@ -174,6 +177,7 @@ export default function CreateProposal() {
           console.log(
             "✅ Successfully created proposal"
           );
+          window.location.reload();
         } catch (error) {
           console.error("failed to create first proposal", error);
         }
@@ -181,11 +185,11 @@ export default function CreateProposal() {
 
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="row-sm-12">
+        <div >
+            <div >
+                <div >
                 <h2>Create New Proposal</h2>
-                <div className="card">
+                <div className="card ">
                 <label>
                           Proposal:
                   </label>
@@ -204,34 +208,39 @@ export default function CreateProposal() {
                     value={proposalType === 'pay'}
                     onChange={handlePayChange}
                   />
-                  <br></br>
+                  <div className="new-proposal">
 
                 
                 {proposalType === 'new' &&
                   
                       <form onSubmit={handleSubmit}>
-
-                          <textarea value={proposalText} onChange={handleTextChange}/>
+                        <div className="button-and-text">
+                          <p>Submit an off-chain proposal</p>
+                          <textarea value={proposalText} onChange={handleTextChange} rows="6"/>
+                          
                         
                         <input type="submit" value="Submit" />
+                        </div>
                       </form>
                   
                 }
                 {proposalType === 'mint' &&
                   
                     <form onSubmit={submitMintRequest}>
+                      <div className="button-and-text">
 
                     <p>Should the DAO mint an additional tokens into the treasury?</p>
                     <label>Amount of Token to Mint:
                     <input type="number" name="amount" onChange={handleAmountChange} />
                     </label>
                     <input type="submit" value="Submit" />
+                    </div>
                     </form>
                   
                 }
                 {proposalType === 'pay' &&
                     <form onSubmit={submitTransferRequest}>
-
+                    <div className="button-and-text">
                     <p>Propose the DAO transfers tokens to the given address below</p>
                     <label>Address to transfer to:
                     <input type="text" name="address" onChange={handleAddressChange} />
@@ -240,8 +249,10 @@ export default function CreateProposal() {
                     <input type="number" name="amount" onChange={handleAmountChange} />
                     </label>
                     <input type="submit" value="Submit" />
+                    </div>
                     </form>
                 }
+                </div>
                 </div>
 
 
