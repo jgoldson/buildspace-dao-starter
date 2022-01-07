@@ -162,7 +162,7 @@ const App = () => {
 
   useEffect(() => {
     memberList.map((member) => {
-      totalTokensHeld = totalTokensHeld.current() + Number(member.tokenAmount);
+      totalTokensHeld = totalTokensHeld + Number(member.tokenAmount);
       console.log("total tokens held " + totalTokensHeld);
       return setTotalTokens(totalTokensHeld);
     });
