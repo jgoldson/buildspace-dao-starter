@@ -12,7 +12,7 @@ const appModule = sdk.getAppModule(
       name: "GardenDAO Proposals",
 
       // This is the location of our governance token, our ERC-20 contract!
-      votingTokenAddress: "0x037CD0dD0efc916dA852cE2e0Ea048563Ce1518D",
+      votingTokenAddress: "0xa62Be9821304A427B636B33dD942BbDC04694381",
 
       // After a proposal is created, when can members start voting?
       // For now, we set this to immediately.
@@ -23,7 +23,7 @@ const appModule = sdk.getAppModule(
       proposalVotingTimeInSeconds: 24 * 60 * 60,
 
       // Will explain more below.
-      votingQuorumFraction: 0,
+      votingQuorumFraction: 50,
 
       // What's the minimum # of tokens a user needs to be allowed to create a proposal?
       // I set it to 0. Meaning no tokens are required for a user to be allowed to

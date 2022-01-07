@@ -6,24 +6,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Some quick checks to make sure our .env is working.
-if (!process.env.PRIVATE_KEY || process.env.PRIVATE_KEY == "") {
+if (!process.env.REACT_APP_PRIVATE_KEY || process.env.REACT_APP_PRIVATE_KEY == "") {
   console.log("🛑 Private key not found.")
 }
 
-if (!process.env.ALCHEMY_API_URL || process.env.ALCHEMY_API_URL == "") {
+if (!process.env.REACT_APP_ALCHEMY_API_URL || process.env.REACT_APP_ALCHEMY_API_URL == "") {
   console.log("🛑 Alchemy API URL not found.")
 }
 
-if (!process.env.WALLET_ADDRESS || process.env.WALLET_ADDRESS == "") {
+if (!process.env.REACT_APP_WALLET_ADDRESS || process.env.REACT_APP_WALLET_ADDRESS == "") {
   console.log("🛑 Wallet Address not found.")
 }
 
 const sdk = new ThirdwebSDK(
   new ethers.Wallet(
     // Your wallet private key. ALWAYS KEEP THIS PRIVATE, DO NOT SHARE IT WITH ANYONE, add it to your .env file and do not commit that file to github!
-    process.env.PRIVATE_KEY,
+    process.env.REACT_APP_PRIVATE_KEY,
     // RPC URL, we'll use our Alchemy API URL from our .env file.
-    ethers.getDefaultProvider(process.env.ALCHEMY_API_URL),
+    ethers.getDefaultProvider(process.env.REACT_APP_ALCHEMY_API_URL),
   ),
 );
 

@@ -17,12 +17,13 @@ const bundleDropModule = sdk.getBundleDropModule(
   "0xe2fd2B91BE3A91f9DEAfdd7303DF14833E498025",
 );
 const tokenModule = sdk.getTokenModule(
-  "0x037CD0dD0efc916dA852cE2e0Ea048563Ce1518D",
+  "0xa62Be9821304A427B636B33dD942BbDC04694381",
 );
 
 const voteModule = sdk.getVoteModule(
-  "0x28cBDF2f39958820ba42F342cbb7DeBc19564dcb",
+  "0x8457BE5b69072833Fa340a50a5226a72F5aE8A8D",
 );
+var voteArray = [];
 
 
 
@@ -46,6 +47,8 @@ const App = () => {
   const [proposals, setProposals] = useState([]);
 const [isVoting, setIsVoting] = useState(false);
 const [hasVoted, setHasVoted] = useState(false);
+const [hasVotedArray, setHasVotedArray] = useState([]);
+
 
 
 // Retreive all our existing proposals from the contract.
@@ -79,16 +82,28 @@ useEffect(() => {
   }
 
   // Check if the user has already voted on the first proposal.
-  voteModule
-    .hasVoted(proposals[0].proposalId, address)
-    .then((hasVoted) => {
-      setHasVoted(hasVoted);
-      console.log("🥵 User has already voted")
-    })
-    .catch((err) => {
-      console.error("failed to check if wallet has voted", err);
-    });
-}, [hasClaimedNFT, proposals, address]);
+
+  for (let i = 0; i<proposals.length; i++){
+    
+    voteModule
+      .hasVoted(proposals[i].proposalId, address)
+      .then((hasVoted) => {
+        console.log("has voted variable: " + hasVoted)
+        voteArray[i] = hasVoted
+        console.log("vote array: " + voteArray)
+        setHasVoted(hasVoted);
+      })
+      .catch((err) => {
+        console.error("failed to check if wallet has voted", err);
+      });
+    }
+  }, [hasClaimedNFT, proposals, address]);
+
+  useEffect(()=>{
+    console.log("Vote array before setting state is : " + voteArray)
+    setHasVotedArray(voteArray)
+  }, [hasVoted, proposals])
+
 
   // A fancy function to shorten someones wallet address, no need to show the whole thing. 
   const shortenAddress = (str) => {
@@ -208,7 +223,8 @@ useEffect(() => {
         <div>
           <div>
             <h2>Member List</h2>
-            <table className="card">
+            <div className="card">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Address</th>
@@ -226,6 +242,7 @@ useEffect(() => {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
           <div>
             <h2>Active Proposals</h2>
@@ -273,6 +290,7 @@ useEffect(() => {
                         // before voting we first need to check whether the proposal is open for voting
                         // we first need to get the latest state of the proposal
                         const proposal = await voteModule.get(vote.proposalId);
+                        
                         // then we check if the proposal is open for voting (state === 1 means it is open)
                         if (proposal.state === 1) {
                           // if it is open for voting, we'll vote on it
@@ -317,8 +335,18 @@ useEffect(() => {
               }}
             >
               {proposals.map((proposal, index) => (
-                <div key={proposal.proposalId} className="card">
-                  <h5>{proposal.description}</h5>
+                <div>
+                  {proposal.state === 1 &&
+                  <div key={proposal.proposalId} className={hasVotedArray[index] ? 'redCard' : 'card'}>
+                  
+                  <h5>{proposal.description} </h5>
+                  
+                  <div>
+                  <p>Has user voted?: {String(hasVotedArray[index])}</p>
+                  </div>
+                  <h5>For: {ethers.utils.formatUnits(proposal.votes[1].count._hex, 18)}</h5>
+                  <h5>Against: {ethers.utils.formatUnits(proposal.votes[0].count._hex, 18)}</h5>
+                  <h5>Abstain: {ethers.utils.formatUnits(proposal.votes[2].count._hex, 18)}</h5>
                   <div>
                     {proposal.votes.map((vote) => (
                       <div key={vote.type}>
@@ -327,17 +355,28 @@ useEffect(() => {
                           id={proposal.proposalId + "-" + vote.type}
                           name={proposal.proposalId}
                           value={vote.type}
-                          //default the "abstain" vote to chedked
+                          //default the "abstain" vote to checked
                           defaultChecked={vote.type === 2}
                         />
                         <label htmlFor={proposal.proposalId + "-" + vote.type}>
                           {vote.label}
                         </label>
+
+                        
                       </div>
+
+
                     ))}
                   </div>
-                </div>
-              ))}
+                  <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsVoting(true);
+                submitVote(proposal);
+                
+              }}>
+                
               <button disabled={isVoting || hasVoted} type="submit">
                 {isVoting
                   ? "Voting..."
@@ -350,8 +389,31 @@ useEffect(() => {
                 sign.
               </small>
             </form>
-            <CreateProposal />
+                </div>
+                
+                }
+                </div>
+                
+                    ))}
+                    
+             
+                
+              <button disabled={isVoting || hasVoted} type="submit">
+                {isVoting
+                  ? "Voting..."
+                  : hasVoted
+                    ? "You Already Voted"
+                    : "Submit Votes"}
+              </button>
+              <small>
+                This will trigger multiple transactions that you will need to
+                sign.
+              </small>
+            </form>
+            
+            
           </div>
+          <CreateProposal />
         </div>
       </div>
     );
@@ -397,6 +459,96 @@ useEffect(() => {
       </button>
     </div>
   );
+  async function submitVote(proposal){
+  
+
+    //before we do async things, we want to disable the button to prevent double clicks
+    setIsVoting(true);
+
+    // lets get the votes from the form for the values
+    
+   let voteResult = {
+      proposalId: proposal.proposalId,
+      //abstain by default
+      vote: 2,
+    };
+    
+    proposal.votes.forEach((vote) => {
+      const elem = document.getElementById(
+        proposal.proposalId + "-" + vote.type
+      );
+
+        if (elem.checked) {
+          voteResult.vote = vote.type;
+          return;
+        }
+      });
+    
+
+      
+
+    // first we need to make sure the user delegates their token to vote
+    try {
+      //we'll check if the wallet still needs to delegate their tokens before they can vote
+      const delegation = await tokenModule.getDelegationOf(address);
+      // if the delegation is the 0x0 address that means they have not delegated their governance tokens yet
+      if (delegation === ethers.constants.AddressZero) {
+        //if they haven't delegated their tokens yet, we'll have them delegate them before voting
+        await tokenModule.delegateTo(address);
+      }
+      // then we need to vote on the proposals
+      try {
+        
+          
+            // before voting we first need to check whether the proposal is open for voting
+            // we first need to get the latest state of the proposal
+            
+            
+            // then we check if the proposal is open for voting (state === 1 means it is open)
+            if (proposal.state === 1) {
+              // if it is open for voting, we'll vote on it
+              return voteModule.vote(proposal.proposalId, voteResult.vote);
+            }
+    
+          
+        
+        try {
+          // if any of the propsals are ready to be executed we'll need to execute them
+          // a proposal is ready to be executed if it is in state 4
+          await Promise.all(
+            proposal.map(async (vote) => {
+              // we'll first get the latest state of the proposal again, since we may have just voted before
+              const proposal = await voteModule.get(
+                vote.proposalId
+              );
+
+              //if the state is in state 4 (meaning that it is ready to be executed), we'll execute the proposal
+              if (proposal.state === 4) {
+                return voteModule.execute(vote.proposalId);
+              }
+            })
+          );
+          // if we get here that means we successfully voted, so let's set the "hasVoted" state to true
+          setHasVoted(true);
+          // and log out a success message
+          console.log("successfully voted");
+        } catch (err) {
+          console.error("failed to execute votes", err);
+        }
+      } catch (err) {
+        console.error("failed to vote", err);
+      }
+    } catch (err) {
+      console.error("failed to delegate tokens");
+    } finally {
+      // in *either* case we need to set the isVoting state to false to enable the button again
+      setIsVoting(false);
+    }
+  
+
 };
+}
+
+
 
 export default App;

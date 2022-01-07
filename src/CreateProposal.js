@@ -1,53 +1,118 @@
 import { ethers } from "ethers";
 
 // import thirdweb
-import { useWeb3 } from "@3rdweb/hooks";
+
 import { ThirdwebSDK } from "@3rdweb/sdk";
-
+import dotenv from "dotenv";
 import React from "react"
-import {useState} from "react"
 
-const sdk = new ThirdwebSDK("rinkeby");
+dotenv.config();
+
+
+const sdk = new ThirdwebSDK(
+  new ethers.Wallet(
+    // Your wallet private key. ALWAYS KEEP THIS PRIVATE, DO NOT SHARE IT WITH ANYONE, add it to your .env file and do not commit that file to github!
+    process.env.REACT_APP_PRIVATE_KEY,
+    // RPC URL, we'll use our Alchemy API URL from our .env file.
+    ethers.getDefaultProvider(process.env.REACT_APP_ALCHEMY_API_URL),
+  ),
+);
+
 
 // Our voting contract.
 const voteModule = sdk.getVoteModule(
-  "0x28cBDF2f39958820ba42F342cbb7DeBc19564dcb",
+  "0x8457BE5b69072833Fa340a50a5226a72F5aE8A8D",
 );
 
 // Our ERC-20 contract.
 const tokenModule = sdk.getTokenModule(
-  "0x037CD0dD0efc916dA852cE2e0Ea048563Ce1518D",
+  "0xa62Be9821304A427B636B33dD942BbDC04694381",
 );
 
 
 
 export default function CreateProposal() {
 
-    constructor() {
-        super();
+    const [proposalText, setProposalText] = React.useState('');
+    const [amount, setAmount] = React.useState(0);
+    const [address, setAddress] = React.useState('');
+
+    const handleTextChange = (event) => {
+      setProposalText(event.target.value);
+    };
+
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      generateNewProposal();
+    }
+
+    const handleAmountChange = (event) => {
+      setAmount(event.target.value);
+      
+      console.log(amount);
+    }
+    const handleAddressChange = (event) => {
+      setAddress(event.target.value);
+      
+      console.log(address);
+    }
+    const submitMintRequest = (event) => {
+      event.preventDefault();
+      generateNewMintProposal(amount);
+    }
+    const submitTransferRequest = (event) => {
+      event.preventDefault();
+      generateTransferProposal(amount, address);
+    }
+
+
+    const [proposalType, setProposalType] = React.useState('new');
+
+    const handleNewChange = () => {
+      setProposalType('new');
+    };
+
+    const handleMintChange = () => {
+      setProposalType('mint');
+    };
+
+    const handlePayChange = () => {
+      setProposalType('pay');
+    };
     
-        this.state = {
-          color: 'green'
-        };
+    const generateNewProposal = async () => {
+      try {
+        console.log("attempting to create new proposal...")
+        await voteModule.propose(
+          proposalText,
+          [
+            {
+              nativeTokenValue: 0,
+              transactionData: tokenModule.contract.interface.encodeFunctionData(
+                // Minting 0 new tokens to allow a blank proposal through. Waiting on ThirdWeb support on how to work around this
+                "mint",
+                [
+                  voteModule.address,
+                  ethers.utils.parseUnits("0", 18),
+                ]
+              ),
+              // Our token module that actually executes the mint.
+              toAddress: tokenModule.address,
+            },
+          ]
+        );
     
-        this.onRadioChange = this.onRadioChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
-    
+        console.log("✅ Successfully created new blank proposal");
+      } catch (error) {
+        console.error("failed to create first proposal", error);
+        
       }
-    
-      onRadioChange = (e) => {
-        this.setState({
-          color: e.target.value
-        });
-      }
-    
-      onSubmit = (e) => {
-        e.preventDefault();
-        console.log(this.state);
-      }
+  }
+
 
     const generateNewMintProposal = async (tokenAmount) => {
         try {
+          console.log("attempting to create new mint proposal...")
           const amount = tokenAmount;
           
           await voteModule.propose(
@@ -75,11 +140,12 @@ export default function CreateProposal() {
       
           console.log("✅ Successfully created proposal to mint tokens");
         } catch (error) {
-          console.error("failed to create first proposal", error);
+          console.error("failed to create proposal", error);
           
         }
     }
     const generateTransferProposal = async (tokenAmount, address ) => {
+      console.log("Generating transfer proposal...")
         try {
           const amount = tokenAmount;
           // Create proposal to transfer ourselves 6,900 token for being awesome.
@@ -106,7 +172,7 @@ export default function CreateProposal() {
           );
       
           console.log(
-            "✅ Successfully created proposal to reward ourselves from the treasury, let's hope people vote for it!"
+            "✅ Successfully created proposal"
           );
         } catch (error) {
           console.error("failed to create first proposal", error);
@@ -119,35 +185,77 @@ export default function CreateProposal() {
             <div className="row">
                 <div className="row-sm-12">
                 <h2>Create New Proposal</h2>
-                    <form>
-                        <div className="radio">
-                        <label>
-                            <input type="radio" value="option1" 
-                                        checked={selectedOption === "option1"} 
-                                        onChange={handleOptionChange()} />
-                            New Proposal
-                        </label>
-                        </div>
-                        <div className="radio">
-                        <label>
-                            <input type="radio" value="option2" 
-                                        checked={selectedOption === "option2"} 
-                                        onChange={handleOptionChange()} />
-                            Transfer Tokens
-                        </label>
-                        </div>
-                        <div className="radio">
-                        <label>
-                            <input type="radio" value="option3" 
-                                        checked={selectedOption === 3} 
-                                        onChange={handleOptionChange} />
-                            Mint New Tokens
-                        </label>
-                        </div>
+                <div className="card">
+                <label>
+                          Proposal:
+                  </label>
+                <RadioButton
+                    label="New"
+                    value={proposalType === 'new'}
+                    onChange={handleNewChange}
+                  />
+                  <RadioButton
+                    label="Mint"
+                    value={proposalType === 'mint'}
+                    onChange={handleMintChange}
+                  />
+                  <RadioButton
+                    label="Pay"
+                    value={proposalType === 'pay'}
+                    onChange={handlePayChange}
+                  />
+                  <br></br>
+
+                
+                {proposalType === 'new' &&
+                  
+                      <form onSubmit={handleSubmit}>
+
+                          <textarea value={proposalText} onChange={handleTextChange}/>
+                        
+                        <input type="submit" value="Submit" />
+                      </form>
+                  
+                }
+                {proposalType === 'mint' &&
+                  
+                    <form onSubmit={submitMintRequest}>
+
+                    <p>Should the DAO mint an additional tokens into the treasury?</p>
+                    <label>Amount of Token to Mint:
+                    <input type="number" name="amount" onChange={handleAmountChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
                     </form>
+                  
+                }
+                {proposalType === 'pay' &&
+                    <form onSubmit={submitTransferRequest}>
+
+                    <p>Propose the DAO transfers tokens to the given address below</p>
+                    <label>Address to transfer to:
+                    <input type="text" name="address" onChange={handleAddressChange} />
+                    </label>
+                    <label>Amount of Tokens to transfer:
+                    <input type="number" name="amount" onChange={handleAmountChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                    </form>
+                }
+                </div>
+
 
                 </div>
             </div>
         </div>
     )
 }
+
+const RadioButton = ({ label, value, onChange }) => {
+  return (
+    <label>
+      <input type="radio" checked={value} onChange={onChange} />
+      {label}
+    </label>
+  );
+};

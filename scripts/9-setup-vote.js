@@ -3,12 +3,12 @@ import sdk from "./1-initialize-sdk.js";
 
 // This is our governance contract.
 const voteModule = sdk.getVoteModule(
-  "0x28cBDF2f39958820ba42F342cbb7DeBc19564dcb",
+  "0x8457BE5b69072833Fa340a50a5226a72F5aE8A8D",
 );
 
 // This is our ERC-20 contract.
 const tokenModule = sdk.getTokenModule(
-  "0x037CD0dD0efc916dA852cE2e0Ea048563Ce1518D",
+  "0xa62Be9821304A427B636B33dD942BbDC04694381",
 );
 
 (async () => {
@@ -30,7 +30,7 @@ const tokenModule = sdk.getTokenModule(
   try {
     // Grab our wallet's token balance, remember -- we hold basically the entire supply right now!
     const ownedTokenBalance = await tokenModule.balanceOf(
-      process.env.WALLET_ADDRESS
+      process.env.REACT_APP_WALLET_ADDRESS
     );
 
     // Grab 90% of the supply that we hold.

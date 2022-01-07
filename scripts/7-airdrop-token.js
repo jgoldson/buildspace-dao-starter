@@ -8,7 +8,7 @@ const bundleDropModule = sdk.getBundleDropModule(
 
 // This is the address to our ERC-20 token contract.
 const tokenModule = sdk.getTokenModule(
-  "0x037CD0dD0efc916dA852cE2e0Ea048563Ce1518D",
+  "0xa62Be9821304A427B636B33dD942BbDC04694381",
 );
 
 (async () => {
