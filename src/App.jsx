@@ -259,13 +259,15 @@ const App = () => {
           <h2>Active Proposals</h2>
           <div className="row">
           {proposals.map((proposal, index) => (
-              <div className="column2">
-                {proposal.state === 1 && (
-              <div className="proposal-cards">
-                {proposalCards(proposal, totalTokens, index)}
-              </div>
-            )}
-            </div>
+              
+                proposal.state === 1 && (
+                <div className="column2">
+                  <div className="proposal-cards">
+                     {proposalCards(proposal, totalTokens, index)}
+                  </div>
+                </div>
+            )
+            
           ))}
  
           </div>
