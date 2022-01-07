@@ -23,8 +23,7 @@ const voteModule = sdk.getVoteModule(
 );
 var voteArray = [];
 var totalTokensHeld = 0;
-var activeProposalsA = [];
-var activeProposalsB = [];
+
 
 const App = () => {
   const { connectWallet, address, error, provider } = useWeb3();
@@ -67,17 +66,6 @@ const App = () => {
       });
   }, [hasClaimedNFT]);
 
-  useEffect(() => {
-    for (let i = 0; i < proposals.length; i++) {
-      if (proposals[i].state === 1) {
-        if (i % 2 === 0) {
-          activeProposalsA.push(proposals[i]);
-        } else {
-          activeProposalsB.push(proposals[i]);
-        }
-      }
-    }
-  }, [proposals]);
 
   // We also need to check if the user already voted.
   useEffect(() => {
@@ -274,7 +262,7 @@ const App = () => {
               <div className="column2">
                 {proposal.state === 1 && (
               <div className="proposal-cards">
-                {proposalCards(proposal, totalTokensHeld, index)}
+                {proposalCards(proposal, totalTokens, index)}
               </div>
             )}
             </div>
@@ -290,7 +278,7 @@ const App = () => {
               <div className="column2">
                 {proposal.state !== 1 && (
                   <div className="proposal-cards">
-                    {proposalCards(proposal, totalTokensHeld, index)}
+                    {proposalCards(proposal, totalTokens, index)}
                   </div>
                 )}
               </div>
@@ -388,7 +376,7 @@ const App = () => {
     } finally {
       // in *either* case we need to set the isVoting state to false to enable the button again
       setIsVoting(false);
-      window.location.reload();
+      
     }
   }
   async function executeProposal(proposal) {

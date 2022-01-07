@@ -15,8 +15,10 @@ body {
 }
 
 h1 {
-  font-size: 5rem;
+  font-size: 7rem;
+  font-weight: bold;
 }
+
 @media screen and (max-width: 768px) {
   h1 {
     font-size: 3rem;
@@ -73,6 +75,7 @@ input[type="radio"]{
   text-align: left;
   margin:2%;
   align-items: center;
+  
 }
 .box {
   display: inline-block;
@@ -109,6 +112,7 @@ input[type="radio"]{
 .card {
   background-color: #fff;
   padding: 2rem;
+  border: solid;
   border-radius: 1rem;
   color: #000;
   justify-content: space-between;
@@ -119,6 +123,7 @@ input[type="radio"]{
 .card2 {
   background-color: #fff;
   padding: 2rem;
+  border: solid;
   border-radius: 1rem;
   color: #000;
   justify-content: space-evenly;
@@ -140,12 +145,14 @@ input[type="radio"]{
   padding: 2rem;
   border-radius: 1rem;
   color: #000;
+  border: solid;
 }
 .greenCard {
   background-color: rgb(160, 251, 130);
   padding: 2rem;
   border-radius: 1rem;
   color: #000;
+  border: solid;
 }
 .circledLabel{
   background-color: rgb(255, 255, 255);

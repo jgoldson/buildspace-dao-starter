@@ -216,10 +216,12 @@ export default function CreateProposal() {
                       <form onSubmit={handleSubmit}>
                         <div className="button-and-text">
                           <p>Submit an off-chain proposal</p>
-                          <textarea value={proposalText} onChange={handleTextChange} rows="6"/>
+                          
+                          <textarea value={proposalText} onChange={handleTextChange} rows="5"/>
+                          <br></br>
                           
                         
-                        <input type="submit" value="Submit" />
+                        <button type="submit" value="Submit" >Submit</button>
                         </div>
                       </form>
                   
@@ -233,7 +235,7 @@ export default function CreateProposal() {
                     <label>Amount of Token to Mint:
                     <input type="number" name="amount" onChange={handleAmountChange} />
                     </label>
-                    <input type="submit" value="Submit" />
+                    <button type="submit" value="Submit" >Submit</button>
                     </div>
                     </form>
                   
@@ -248,7 +250,7 @@ export default function CreateProposal() {
                     <label>Amount of Tokens to transfer:
                     <input type="number" name="amount" onChange={handleAmountChange} />
                     </label>
-                    <input type="submit" value="Submit" />
+                    <button type="submit" value="Submit" >Submit</button>
                     </div>
                     </form>
                 }
