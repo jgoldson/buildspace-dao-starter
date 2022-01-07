@@ -221,7 +221,8 @@ const App = () => {
   if (!address) {
     return (
       <div className="landing">
-        <h1>Welcome to gardenDAO🌱</h1>
+        <h1>Welcome to gardenDAO </h1>
+        <h3>A community DAO for our community garden</h3>
         <button onClick={() => connectWallet("injected")} className="btn-hero">
           Connect your wallet
         </button>
@@ -303,7 +304,8 @@ const App = () => {
   // Render mint nft screen.
   return (
     <div className="mint-nft">
-      <h1>Mint your free gardenDAO🌱 Membership NFT</h1>
+      <h1>Mint your free gardenDAO🌱 Membership NFT to join</h1>
+      
       <button
         disabled={isClaiming}
         onClick={() => {
