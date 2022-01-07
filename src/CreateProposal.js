@@ -21,7 +21,7 @@ const sdk = new ThirdwebSDK(
 
 // Our voting contract.
 const voteModule = sdk.getVoteModule(
-  "0x8457BE5b69072833Fa340a50a5226a72F5aE8A8D",
+  "0x9556421EAD1E8E9809dc1D636958C63618f27b8E",
 );
 
 // Our ERC-20 contract.
@@ -36,6 +36,7 @@ export default function CreateProposal() {
     const [proposalText, setProposalText] = React.useState('');
     const [amount, setAmount] = React.useState(0);
     const [address, setAddress] = React.useState('');
+    const [loadingText, setLoadingText]=React.useState('');
 
     const handleTextChange = (event) => {
       setProposalText(event.target.value);
@@ -83,6 +84,7 @@ export default function CreateProposal() {
     const generateNewProposal = async () => {
       try {
         console.log("attempting to create new proposal...")
+        setLoadingText("Attempting to create new mint proposal, please wait...");
         await voteModule.propose(
           proposalText,
           [
@@ -103,9 +105,11 @@ export default function CreateProposal() {
         );
     
         console.log("✅ Successfully created new blank proposal");
+        setLoadingText("Success!");
         window.location.reload();
       } catch (error) {
         console.error("failed to create first proposal", error);
+        setLoadingText("Failed to create proposal");
         
       }
   }
@@ -114,6 +118,7 @@ export default function CreateProposal() {
     const generateNewMintProposal = async (tokenAmount) => {
         try {
           console.log("attempting to create new mint proposal...")
+          setLoadingText("Attempting to create new mint proposal, please wait...");
           const amount = tokenAmount;
           
           await voteModule.propose(
@@ -140,15 +145,18 @@ export default function CreateProposal() {
           );
       
           console.log("✅ Successfully created proposal to mint tokens");
+          setLoadingText("Success!");
           window.location.reload();
           
         } catch (error) {
           console.error("failed to create proposal", error);
+          setLoadingText("Failed to create proposal");
           
         }
     }
     const generateTransferProposal = async (tokenAmount, address ) => {
       console.log("Generating transfer proposal...")
+      setLoadingText("Attempting to create proposal, please wait...");
         try {
           const amount = tokenAmount;
           // Create proposal to transfer ourselves 6,900 token for being awesome.
@@ -177,9 +185,11 @@ export default function CreateProposal() {
           console.log(
             "✅ Successfully created proposal"
           );
+          setLoadingText("Success!");
           window.location.reload();
         } catch (error) {
           console.error("failed to create first proposal", error);
+          setLoadingText("Failed to create proposal");
         }
       }
 
@@ -254,6 +264,8 @@ export default function CreateProposal() {
                     </div>
                     </form>
                 }
+                <small>{loadingText}</small>
+                
                 </div>
                 </div>
 

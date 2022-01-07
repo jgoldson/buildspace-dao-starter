@@ -19,13 +19,14 @@ const tokenModule = sdk.getTokenModule(
 );
 
 const voteModule = sdk.getVoteModule(
-  "0x8457BE5b69072833Fa340a50a5226a72F5aE8A8D"
+  "0x9556421EAD1E8E9809dc1D636958C63618f27b8E"
 );
 var voteArray = [];
-var totalTokensHeld = 0;
+
 
 
 const App = () => {
+  var totalTokensHeld = 0;
   const { connectWallet, address, error, provider } = useWeb3();
   console.log("👋 Address:", address);
 
@@ -85,9 +86,9 @@ const App = () => {
       voteModule
         .hasVoted(proposals[i].proposalId, address)
         .then((hasVoted) => {
-          console.log("has voted variable: " + hasVoted);
+          
           voteArray[i] = hasVoted;
-          console.log("vote array: " + voteArray);
+          
           setHasVoted(hasVoted);
         })
         .catch((err) => {
@@ -97,9 +98,9 @@ const App = () => {
   }, [hasClaimedNFT, proposals, address]);
 
   useEffect(() => {
-    console.log("Vote array before setting state is : " + voteArray);
+    
     setHasVotedArray(voteArray);
-  }, [isVoting, hasVoted, proposals]);
+  }, [ hasVoted, proposals]);
 
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str) => {
@@ -335,9 +336,10 @@ const App = () => {
   async function submitVote(proposal) {
     //before we do async things, we want to disable the button to prevent double clicks
     setIsVoting(true);
+    console.log("isVoting is " + isVoting);
 
     // lets get the votes from the form for the values
-
+    
     let voteResult = {
       proposalId: proposal.proposalId,
       //abstain by default
@@ -368,16 +370,20 @@ const App = () => {
         if (proposal.state === 1) {
           // if it is open for voting, we'll vote on it
           voteModule.vote(proposal.proposalId, voteResult.vote);
+          
         }
         executeProposal();
       } catch (err) {
         console.error("failed to vote", err);
+        setIsVoting(false);
       }
     } catch (err) {
       console.error("failed to delegate tokens");
+      setIsVoting(false);
     } finally {
       // in *either* case we need to set the isVoting state to false to enable the button again
       setIsVoting(false);
+      
       
     }
   }
@@ -398,6 +404,7 @@ const App = () => {
       );
     } catch (err) {
       console.error("failed to execute proposal : " + err);
+      
     }
   }
 

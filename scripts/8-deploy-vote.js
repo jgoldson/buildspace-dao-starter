@@ -20,10 +20,10 @@ const appModule = sdk.getAppModule(
 
       // How long do members have to vote on a proposal when it's created?
       // Here, we set it to 24 hours (86400 seconds)
-      proposalVotingTimeInSeconds: 24 * 60 * 60,
+      proposalVotingTimeInSeconds: 72 * 60 * 60,
 
       // Will explain more below.
-      votingQuorumFraction: 50,
+      votingQuorumFraction: 0,
 
       // What's the minimum # of tokens a user needs to be allowed to create a proposal?
       // I set it to 0. Meaning no tokens are required for a user to be allowed to
