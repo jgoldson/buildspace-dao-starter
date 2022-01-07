@@ -22,11 +22,12 @@ const voteModule = sdk.getVoteModule(
   "0x9556421EAD1E8E9809dc1D636958C63618f27b8E"
 );
 var voteArray = [];
+var totalTokensHeld = 0;
 
 
 
 const App = () => {
-  var totalTokensHeld = 0;
+
   const { connectWallet, address, error, provider } = useWeb3();
   console.log("👋 Address:", address);
 
@@ -161,7 +162,7 @@ const App = () => {
 
   useEffect(() => {
     memberList.map((member) => {
-      totalTokensHeld = totalTokensHeld + Number(member.tokenAmount);
+      totalTokensHeld = totalTokensHeld.current() + Number(member.tokenAmount);
       console.log("total tokens held " + totalTokensHeld);
       return setTotalTokens(totalTokensHeld);
     });
